@@ -29,10 +29,10 @@ jobs:
           C:\msys64\msys2_shell.cmd -c "exit"
           
       - name: Setup MSYS2 environment
-        shell: bash
+        shell: cmd
         run: |
-          /usr/bin/bash -lc "pacman -Syu --noconfirm"
-          /usr/bin/bash -lc "pacman -S --noconfirm make mingw-w64-x86_64-toolchain"
+          C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+          C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm make mingw-w64-x86_64-toolchain"
           
       - name: Cache build dependencies
         uses: actions/cache@v4
