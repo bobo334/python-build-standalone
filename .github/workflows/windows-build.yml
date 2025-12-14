@@ -1,0 +1,75 @@
+name: Build Windows x86
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-win32:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["cpython-3.11", "cpython-3.12", "cpython-3.13"]
+        build-options: ["noopt", "pgo"]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Install MSYS2
+        run: |
+          choco install msys2 -y
+          refreshenv
+          
+      - name: Setup MSYS2 environment
+        shell: bash
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm make mingw-w64-x86_64-toolchain
+          
+      - name: Cache build dependencies
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: windows-x86-${{ matrix.python-version }}-${{ matrix.build-options }}-${{ hashFiles('**/Cargo.toml', '**/pyproject.toml') }}
+          restore-keys: |
+            windows-x86-${{ matrix.python-version }}-${{ matrix.build-options }}-
+            windows-x86-
+            
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Build Windows x86 Python
+        shell: pwsh
+        env:
+          Platform: x86
+        run: |
+          $sh = 'C:\msys64\usr\bin\sh.exe'
+          python build-windows.py --sh "$sh" --vs 2022 --python ${{ matrix.python-version }} --options ${{ matrix.build-options }}
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-windows-x86-${{ matrix.python-version }}-${{ matrix.build-options }}
+          path: dist/
+          retention-days: 30
+          
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.python-version }}-${{ matrix.build-options }}
+          path: build/build.log
+          retention-days: 7
