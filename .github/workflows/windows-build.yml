@@ -25,12 +25,14 @@ jobs:
         run: |
           choco install msys2 -y
           refreshenv
+          # Initialize MSYS2
+          C:\msys64\msys2_shell.cmd -c "exit"
           
       - name: Setup MSYS2 environment
         shell: bash
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm make mingw-w64-x86_64-toolchain
+          C:\msys64\usr\bin\bash -lc "pacman -Syu --noconfirm"
+          C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm make mingw-w64-x86_64-toolchain"
           
       - name: Cache build dependencies
         uses: actions/cache@v4
@@ -56,7 +58,7 @@ jobs:
         env:
           Platform: x86
         run: |
-          $sh = 'C:\msys64\usr\bin\sh.exe'
+          $sh = 'C:\msys64\usr\bin\bash.exe'
           python build-windows.py --sh "$sh" --vs 2022 --python ${{ matrix.python-version }} --options ${{ matrix.build-options }}
           
       - name: Upload build artifacts
