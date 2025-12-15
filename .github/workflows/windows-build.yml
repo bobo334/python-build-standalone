@@ -49,7 +49,7 @@ jobs:
           python-version: "3.11"
           
       - name: Set up Visual Studio
-        uses: microsoft/setup-msbuild@855b20f0955393f136bff9d1b653a9c8a1672591 # v2.3.8
+        uses: microsoft/setup-msbuild@v2.3.8
         with:
           vs-version: '17.0'
           
