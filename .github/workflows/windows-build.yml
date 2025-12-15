@@ -49,9 +49,9 @@ jobs:
           python-version: "3.11"
           
       - name: Set up Visual Studio
-        uses: microsoft/setup-msbuild@v2.3.8
+        uses: microsoft/setup-msbuild@v2.3.7
         with:
-          vs-version: '17.0'
+          vs-version: '2022'
           
       - name: Install Python dependencies
         run: |
