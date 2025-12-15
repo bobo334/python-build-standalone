@@ -48,10 +48,15 @@ jobs:
         with:
           python-version: "3.11"
           
+      - name: Set up Visual Studio
+        uses: microsoft/setup-msbuild@855b20f0955393f136bff9d1b653a9c8a1672591 # v2.3.8
+        with:
+          vs-version: '17.0'
+          
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --no-deps -r requirements.txt
+          pip install --no-deps -r requirements.win.txt
           
       - name: Build Windows x86 Python
         shell: pwsh
